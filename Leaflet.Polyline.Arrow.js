@@ -13,22 +13,28 @@ L.Triangle = L.Path.extend({
 		height:300,
 		width:200,
 		weight:1,
+		color:"red",
 		fillOpacity:1,
 		opacity:1,
-		constant:90,
+		constant:0,
 		angle:0,
 	},
 
 	projectLatlngs: function () {
 		
-		var width = this._getLngRadius();
-		var height = this._getScaled(this.options.height());
+		var width = this._getScaledWidth();
+		var height = this._getScaledHeight();
 		
 		this._centerPoint = this._map.latLngToLayerPoint(this._latlng);
+		this._movePoint = L.point(this._centerPoint.x,this._centerPoint.y-30);
+		this._leftPoint = L.point(this._movePoint.x-10,this._movePoint.y);
+		this._rightPoint = L.point(this._movePoint.x+10,this._movePoint.y);
+		this._topPoint = L.point(this._movePoint.x,this._movePoint.y+30);
+		/***m
 		this._leftPoint = this._map.latLngToLayerPoint( [ this._latlng.lat, this._latlng.lng - width ] );
-		this._rightPoint = this._map.latLngToLayerPoint( [ this._latlng.lat, this._latlng.lng + width ] ));
-		this._topPoint = this._map.latLngToLayerPoint( [ this._latlng.lat + height, this._latlng.lng] ));
-
+		this._rightPoint = this._map.latLngToLayerPoint( [ this._latlng.lat, this._latlng.lng + width ] );
+		this._topPoint = this._map.latLngToLayerPoint( [ this._latlng.lat + height, this._latlng.lng] );
+		**/
 	},
 
 	getLatLng: function () {
@@ -36,7 +42,8 @@ L.Triangle = L.Path.extend({
 	},
 
 	getPathString: function () {
-		p0 = this._centerPoint;
+    
+        p0 = this.rotate(this._movePoint);
 		p1 = this.rotate(this._rightPoint);
 		p2 = this.rotate(this._topPoint);
 		p3 = this.rotate(this._leftPoint);
@@ -80,19 +87,28 @@ L.triangle = function (latlng, options) {
 
 L.PolylineArrow = L.Polyline.extend({
 	initialize: function (latlngs, options) {
-		L.Path.prototype.initialize.call(this, options);
+		L.Polyline.prototype.initialize.call(this, options);
 
 		this._latlngs = this._convertLatLngs(latlngs);
 		if(this._latlngs.length>1)
 		{
-			var source = this._latlngs[this._latlngs.length-1];
-			var destination = this._latlngs[this._latlngs.length]
-			var radian = Math.atan2(souce.lng - destination.lng,  - coords[i+1][1]);
+			console.log(this._latlngs);
+			var source = this._latlngs[this._latlngs.length-2];
+			var destination = this._latlngs[this._latlngs.length-1]
+			var radian = Math.atan2(source.lng - destination.lng,  source.lat - destination.lat);
             var pi = Math.PI;
             var degree = radian * (180 / pi) * -1;
-            var t = L.triangle(destination);
-            t.addTo(this._map); 
+            console.log(degree);
+            var t = L.triangle(destination,options);
+            t.setRotation(-degree);
+            this.arrow = t;
 		}
+	},
+
+	onAdd: function (map) {
+		this._map = map;
+		L.Polyline.prototype.onAdd.call(this, map);
+		this.arrow.addTo(this._map);
 	},
 });
 
