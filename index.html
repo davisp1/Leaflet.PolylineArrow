@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Example</title>
+
+	<link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet-0.4.5/leaflet.css" />
+	<!--[if lte IE 8]>
+		<link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet-0.4.5/leaflet.ie.css" />
+	<![endif]-->
+	<script src="http://cdn.leafletjs.com/leaflet-0.4.5/leaflet.js"></script>
+	<script src="Leaflet.Polyline.Arrow.js"></script>
+
+</head>
+<body>
+	<div id="map" style="width: 100%; height: 800px; border: 1px solid #ccc"></div>
+
+	<script>
+	
+		var map = L.map('map');
+
+		var radius = 200;
+
+		var coords = [[43.61047672368098,1.4544439315795896], 
+                      [43.60494553364247,1.44744873046875], 
+                      [43.60441724731168,1.4452171325683594], 
+                      [43.600066477576945,1.4435863494873047], 
+                      [43.59524918693247,1.4171934127807617], 
+                      [43.58738529691427,1.4185237884521484], 
+                      [43.5835306831148,1.4154338836669922], 
+                      [43.57992453062638,1.4121723175048826], 
+                      [43.574608170557745,1.4020442962646484], 
+                      [43.57435944046463,1.4061212539672852]];
+
+        var polyline = new L.polylinearrow(coords, {
+            color : '#0000FF',
+            weight : 2,
+            opacity : 0.6
+        });
+
+        map.addLayer(polyline);		
+
+		map.setView([43.57435944046463,1.4061212539672852], 13);
+
+		var cloudmade = L.tileLayer('http://{s}.tile.cloudmade.com/{key}/{styleId}/256/{z}/{x}/{y}.png', {
+			attribution: 'Map data &copy; 2011 OpenStreetMap contributors, Imagery &copy; 2011 CloudMade',
+			maxZoom: 18,
+			key: 'BC9A493B41014CAABB98F0471D759707',
+			styleId: 997
+		}).addTo(map);
+		
+	</script>
+</body>
+</html>
