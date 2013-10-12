@@ -10,8 +10,8 @@ L.Triangle = L.Path.extend({
 
 	options: {
 		fill: true,
-		height:300,
-		width:200,
+		height:30,
+		width:20,
 		weight:1,
 		color:"red",
 		fillOpacity:1,
@@ -24,17 +24,11 @@ L.Triangle = L.Path.extend({
 		
 		var width = this._getScaledWidth();
 		var height = this._getScaledHeight();
-		
 		this._centerPoint = this._map.latLngToLayerPoint(this._latlng);
-		this._movePoint = L.point(this._centerPoint.x,this._centerPoint.y-30);
-		this._leftPoint = L.point(this._movePoint.x-10,this._movePoint.y);
-		this._rightPoint = L.point(this._movePoint.x+10,this._movePoint.y);
-		this._topPoint = L.point(this._movePoint.x,this._movePoint.y+30);
-		/***m
-		this._leftPoint = this._map.latLngToLayerPoint( [ this._latlng.lat, this._latlng.lng - width ] );
-		this._rightPoint = this._map.latLngToLayerPoint( [ this._latlng.lat, this._latlng.lng + width ] );
-		this._topPoint = this._map.latLngToLayerPoint( [ this._latlng.lat + height, this._latlng.lng] );
-		**/
+		this._movePoint = L.point(this._centerPoint.x,this._centerPoint.y-height);
+		this._leftPoint = L.point(this._movePoint.x-(width/2),this._movePoint.y);
+		this._rightPoint = L.point(this._movePoint.x+(width/2),this._movePoint.y);
+		this._topPoint = L.point(this._movePoint.x,this._centerPoint.y);
 	},
 
 	getLatLng: function () {
@@ -69,15 +63,15 @@ L.Triangle = L.Path.extend({
 	
 	// found in L.Circle
 	_getScaled: function (ex) {
-		return ((ex/2) / 40075017) * 360;
+		return (ex*this._map.getZoom())/18;
 	},
 	
 	_getScaledHeight: function(){
-		return this._getScaled(this.options.height);
+		return this._getScaled(this._height);
 	},
 	
 	_getScaledWidth: function () {
-		return this._getScaled(this.options.width) / Math.cos(L.LatLng.DEG_TO_RAD * this._latlng.lat);
+		return this._getScaled(this._width);
 	},
 });
 
@@ -100,15 +94,26 @@ L.PolylineArrow = L.Polyline.extend({
             var degree = radian * (180 / pi) * -1;
             console.log(degree);
             var t = L.triangle(destination,options);
+            if(degree>0)
+            	degree = degree+5
+            else
+            	degree = degree+5 
             t.setRotation(-degree);
             this.arrow = t;
+            console.log(t);
 		}
 	},
 
 	onAdd: function (map) {
 		this._map = map;
 		L.Polyline.prototype.onAdd.call(this, map);
+		if(this._container)
+			console.this_container;
 		this.arrow.addTo(this._map);
+	},
+	onRemove: function (map) {
+		L.Polyline.prototype.onRemove.call(this, map);
+		map.removeLayer(this.arrow);
 	},
 });
 
